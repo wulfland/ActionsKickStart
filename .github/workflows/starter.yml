@@ -4,22 +4,43 @@ on:
   push:
     branches: 
       - main
-  issues:
-    types: [opened, reopened]
-  
-  schedule:
-    - cron: '11 11 * * 5'
     
   workflow_dispatch:
-    inputs:
-      homedrive:
-        description: Add home drive
-        required: true
-        default: /home
+
       
 jobs:
-  job1:
+  context_job:
     runs-on: ubuntu-latest
+    name: Context
     
     steps:
-      - run: echo "Hello NDC Porto"
+      - run: echo "🎉 The job was triggered by a ${{ github['event_name'] }} event."
+      - run: echo "🏠 drive is `${{ github.event.inputs.homedrive }}`."
+      - run: echo "🎯 environment is `${{ github.event.inputs.environment }}`."
+      - run: echo "📖 log level is `${{ github.event.inputs.logLevel }}`."
+      - run: echo "➿ Run the matrix? `${{ github.event.inputs.run_matrix }}`."
+    
+      - name: Dump GitHub context
+        run: echo '${{ toJSON(github) }}'
+      - name: Dump job context
+        run: echo '${{ toJSON(job) }}'
+      - name: Dump runner context
+        run: echo '${{ toJSON(runner) }}'
+      - name: Dump env context
+        run: echo '${{ toJSON(env) }}'
+
+  expression_job:
+    runs-on: ubuntu-latest
+    name: Expressions
+    if: ${{ github.ref == 'refs/heads/main' }}
+    
+    steps:
+      - run: echo "Only run if triggered by main branch..."
+        if: contains(github.ref, 'main')
+        
+      - run: echo "Run always"
+        if: always()
+      - run: echo "Run only on success"
+        if: success()
+      - run: echo "Run only on failure"
+        if: failure()
