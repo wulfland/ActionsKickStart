@@ -6,9 +6,16 @@ on:
       - main
   issues:
     types: [opened, reopened]
-    
+  
   schedule:
     - cron: '11 11 * * 5'
+    
+  workflow_dispatch:
+    inputs:
+      homedrive:
+        description: Add home drive
+        required: true
+        default: /home
       
 jobs:
   job1:
